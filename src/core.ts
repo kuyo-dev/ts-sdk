@@ -1,9 +1,17 @@
-import { KuyoConfig, ErrorEvent, Transport, KuyoAdapter } from "@kuyo/types";
+import {
+  KuyoConfig,
+  ErrorEvent,
+  Transport,
+  KuyoAdapter,
+  KuyoSession,
+  Environment,
+} from "@kuyo/types";
 
 export class KuyoCore {
   private config: KuyoConfig;
   private transport: Transport;
   private adapter: KuyoAdapter | null = null;
+  private session: KuyoSession | null = null;
 
   constructor(config: KuyoConfig, transport?: Transport) {
     this.config = {
@@ -13,8 +21,33 @@ export class KuyoCore {
       ...config,
     };
 
+    this.initSession();
+
     this.transport = transport || new FetchTransport(this.config);
     this.log("Kuyo Core initialized");
+  }
+
+  private initSession() {
+    const currentSession = sessionStorage.getItem("kuyo_session");
+    if (currentSession) {
+      this.session = JSON.parse(currentSession);
+    } else {
+      this.session = {
+        id: `kuyo_${Date.now().toString(36)}_${Math.random().toString(36).substring(2)}`,
+        environment: (this.config.environment as Environment) || "production",
+        startedAt: Date.now(),
+        endedAt: 0,
+        duration: 0,
+        userAgent: navigator.userAgent,
+        ipAddress: "127.0.0.1",
+      };
+      sessionStorage.setItem("kuyo_session", JSON.stringify(this.session));
+    }
+  }
+
+  private cleanSession() {
+    sessionStorage.removeItem("kuyo_session");
+    this.session = null;
   }
 
   /**
@@ -43,12 +76,15 @@ export class KuyoCore {
   public createEvent(params: Partial<ErrorEvent>): ErrorEvent {
     const context = this.adapter?.getContext() || {};
 
+    console.dir(this.session, { depth: null });
+
     return {
       id: this.generateId(),
       timestamp: Date.now(),
       platform: this.adapter?.name || "unknown",
       context,
       level: "error",
+      session: this.session,
       ...params,
     } as ErrorEvent;
   }
@@ -122,6 +158,7 @@ export class KuyoCore {
   public destroy(): void {
     this.adapter?.teardown?.();
     this.adapter = null;
+    this.cleanSession();
     this.log("Kuyo Core destroyed");
   }
 
@@ -148,7 +185,7 @@ class FetchTransport implements Transport {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.config.apiKey}`,
+        "x-api-key": this.config.apiKey,
         "User-Agent": `Kuyo-SDK/${event.platform}`,
       },
       body: JSON.stringify(event),
