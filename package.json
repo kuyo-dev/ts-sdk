@@ -4,6 +4,10 @@
   "description": "Simple error tracking SDK for Next.js apps",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kuyo-dev/ts-sdk"
+  },
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
