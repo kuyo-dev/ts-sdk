@@ -23,8 +23,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:types && rollup -c && npm run build:check",
-    "build:types": "cd ../types && npm run build",
+    "build": "npm run clean && rollup -c && npm run build:check",
     "build:check": "node -e \"console.log('✅ Build completed:', require('./dist/index.js'))\"",
     "dev": "rollup -c -w",
     "clean": "rm -rf dist",
