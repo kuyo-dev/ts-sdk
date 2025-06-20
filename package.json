@@ -27,7 +27,7 @@
     "build:types": "cd ../types && npm run build",
     "build:check": "node -e \"console.log('✅ Build completed:', require('./dist/index.js'))\"",
     "dev": "rollup -c -w",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts --fix",
