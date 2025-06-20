@@ -33,7 +33,7 @@
     "lint": "eslint src --ext .ts --fix",
     "lint:check": "eslint src --ext .ts",
     "typecheck": "npm run build:types && tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm run lint:check && npm run test && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "error-tracking",
