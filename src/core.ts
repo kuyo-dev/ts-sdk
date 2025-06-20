@@ -12,18 +12,34 @@ export class KuyoCore {
   private transport: Transport;
   private adapter: KuyoAdapter | null = null;
   private session: KuyoSession | null = null;
+  private endpoint: string;
 
   constructor(config: KuyoConfig, transport?: Transport) {
     this.config = {
-      endpoint: "http://localhost:3001/api/events",
       environment: "production",
       debug: false,
+      vercel: {
+        env: process.env.NEXT_PUBLIC_VERCEL_ENV || "development",
+        publicVercelURL: process.env.NEXT_PUBLIC_VERCEL_URL || undefined,
+        productionURL:
+          process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL || undefined,
+        gitProvider: process.env.NEXT_PUBLIC_VERCEL_GIT_PROVIDER || undefined,
+        commitRef: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || undefined,
+        commitSha: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || undefined,
+        commitMessage:
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE || undefined,
+        commitAuthor:
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_AUTHOR_NAME || undefined,
+      },
       ...config,
     };
 
+    this.endpoint = "http://localhost:4009/api/events";
+
     this.initSession();
 
-    this.transport = transport || new FetchTransport(this.config);
+    this.transport =
+      transport || new FetchTransport(this.config, this.endpoint);
     this.log("Kuyo Core initialized");
   }
 
@@ -147,8 +163,8 @@ export class KuyoCore {
     this.config = { ...this.config, ...newConfig };
 
     // Update transport if endpoint changed
-    if (newConfig.endpoint || newConfig.apiKey) {
-      this.transport = new FetchTransport(this.config);
+    if (newConfig.apiKey) {
+      this.transport = new FetchTransport(this.config, this.endpoint);
     }
   }
 
@@ -178,10 +194,13 @@ export class KuyoCore {
  * Default Fetch transport implementation
  */
 class FetchTransport implements Transport {
-  constructor(private config: KuyoConfig) {}
+  constructor(
+    private config: KuyoConfig,
+    private endpoint: string
+  ) {}
 
   async send(event: ErrorEvent): Promise<void> {
-    const response = await fetch(this.config.endpoint!, {
+    const response = await fetch(this.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
