@@ -1,4 +1,4 @@
-import type { NextJSKuyoAdapter, ReactComponentType } from "@kuyo/types";
+import type { NextJSKuyoAdapter, ReactComponentType } from "../types/sdk";
 import type { KuyoCore } from "../core";
 
 export class NextJSAdapter implements NextJSKuyoAdapter {

@@ -1,6 +1,6 @@
 import { KuyoCore } from "./core";
 import { NextJSAdapter } from "./adapters/nextjs";
-import type { KuyoConfig, ErrorEvent, ReactComponentType } from "@kuyo/types";
+import type { KuyoConfig, ErrorEvent, ReactComponentType } from "./types/sdk";
 
 // Global core instance
 let globalCore: KuyoCore | null = null;

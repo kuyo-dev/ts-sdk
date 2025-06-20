@@ -1,1 +1,1 @@
-export * from "@kuyo/types";
+export * from "./types";

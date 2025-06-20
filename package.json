@@ -42,9 +42,6 @@
   ],
   "author": "Kuyo Team",
   "license": "MIT",
-  "dependencies": {
-    "@kuyo/types": "*"
-  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",

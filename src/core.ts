@@ -4,8 +4,8 @@ import {
   Transport,
   KuyoAdapter,
   KuyoSession,
-  Environment,
-} from "@kuyo/types";
+} from "./types/sdk";
+import { Environment } from "./types/common";
 
 export class KuyoCore {
   private config: KuyoConfig;
